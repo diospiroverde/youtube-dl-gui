@@ -22,17 +22,18 @@ class Video {
         this.identifier = Utils.getRandomID(32);
     }
 
+    // updated for current version of yt-dlp
     setFilename(liveData) {
         if(liveData.includes("[download] Destination: ")) {
             const replaced = liveData.replace("[download] Destination: ", "");
             this.filename = path.basename(replaced);
-        } else if(liveData.includes("[ffmpeg] Merging formats into \"")) {
-            const noPrefix = liveData.replace("[ffmpeg] Merging formats into \"", "");
+        } else if(liveData.includes("[Merger] Merging formats into \"")) {
+            const noPrefix = liveData.replace("[Merger] Merging formats into \"", "");
             this.filename = path.basename(noPrefix.trim().slice(0, -1));
-        } else if(liveData.includes("[ffmpeg] Adding metadata to '")) {
-            const noPrefix = liveData.replace("[ffmpeg] Adding metadata to '", "");
+        } else if(liveData.includes("[Metadata] Adding metadata to \"")) {
+            const noPrefix = liveData.replace("[Metadata] Adding metadata to \"", "");
             this.filename = path.basename(noPrefix.trim().slice(0, -1));
-        }
+        } 
     }
 
     getFilename() {
