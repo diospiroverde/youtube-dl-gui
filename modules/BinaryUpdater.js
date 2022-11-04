@@ -71,12 +71,14 @@ class BinaryUpdater {
                 console.error('An error occurred while retrieving the latest yt-dlp version data.')
                 return null;
             }
-            if (res.status === 302) {
-                const versionRegex = res.data.match(/[0-9]+\.[0-9]+\.[0-9]+/);
-                const urlRegex = res.data.match(/(?<=").+?(?=")/);
+            if (res.status === 302) {              
+                const versionRegex = res.headers.location.match(/[0-9]+\.[0-9]+\.[0-9]+/);              
+                //const urlRegex = res.headers.location.match(/(?<=").+?(?=")/);
+                const urlRegex = res.headers.location;            
                 return {
                     remoteVersion: versionRegex ? versionRegex[0] : null,
-                    remoteUrl: urlRegex ? urlRegex[0] : null,
+                    //remoteUrl: urlRegex ? urlRegex[0] : null,
+                    remoteUrl: urlRegex
                 };
             } else {
                 console.error('Did not get redirect for the latest version link. Status: ' + err.response.status);
@@ -114,7 +116,7 @@ class BinaryUpdater {
 
     //Downloads the file at the given url and saves it to the ytdl path.
     async downloadUpdate(remoteUrl, remoteVersion) {
-        const writer = fs.createWriteStream(this.paths.ytdl);
+        const writer = fs.createWriteStream(this.paths.ytdl);               
         const { data, headers } = await axios.get(remoteUrl, {responseType: 'stream'});
         const totalLength = +headers['content-length'];
         const total = Utils.convertBytes(totalLength);
