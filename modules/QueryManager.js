@@ -367,6 +367,7 @@ class QueryManager {
 
     async openVideo(args) {
         let video = this.getVideo(args.identifier);
+		console.log(video.type);
         let file = video.filename;
         let fallback = false;
         if(video.type === "playlist") {
@@ -388,7 +389,7 @@ class QueryManager {
             });
         }
         if(args.type === "folder") {
-            if(fallback) {
+            if(fallback || !this.verifyStringCompatibility(await this.verifyOpenVideoFilepath(video, file))) {
                 shell.openPath(video.downloadedPath);
             } else {
                 shell.showItemInFolder(await this.verifyOpenVideoFilepath(video, file));
@@ -411,6 +412,14 @@ class QueryManager {
             //Fallback to original method if file doesnt exist.
             return path.join(video.downloadedPath, video.getFilename() + extension);
         }
+    }
+
+    // for some reason showItemInFolder() is failing when the filename contains the # character. It's possibile this may happen with other characters.
+    verifyStringCompatibility(file)
+    {
+        if(file.indexOf("#") == -1)
+            return true;       
+        return false;
     }
 
     getUnifiedAvailableSubtitles(videos) {
